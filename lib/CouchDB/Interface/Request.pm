@@ -10,7 +10,6 @@ use warnings;
 use feature qw(say);
 
 #modules
-use Carp qw(confess);
 use Moo;
 use Mojo::JSON;
 use Mojo::UserAgent;
