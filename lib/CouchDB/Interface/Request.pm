@@ -48,7 +48,6 @@ sub _describe {
 	say "\tRequest:  ", uc($self->method)," ",$self->uri;
 	say "\tSent Content:  ", $self->json->encode($self->content);
 	say "\tResponse code was: \"",$response->code,"\ (",$response->message,")" if defined $response->code;
-	say "\tMessage was: \"",$response->message,"\"." if defined $response->message;
 	say "\tError was: \"",$response->error,"\"." if defined $response->error;
 	say "";
 }
