@@ -22,9 +22,7 @@ has debug => (is => 'rw', default => sub { return 0} );
 sub all_dbs {
 	my $self = shift;
 	my $request = CouchDB::Interface::Request->new(uri => $self->uri.'_all_dbs', debug => $self->debug, method => 'get');
-	my $response = $request->execute;
-	my $rv = $self->is_response($response,200);
-	return defined $rv ? $rv->json : undef; 
+	return $self->_get_response($request,200);
 }
 
 sub has_db {
@@ -38,9 +36,7 @@ sub create_db {
 	my $name = shift // $self->name;
 	my $uri = $self->uri.$name.'/';
 	my $request = CouchDB::Interface::Request->new(uri => $uri, debug => $self->debug, method => 'put');
-	my $response = $request->execute;
-	my $rv = $self->is_response($response,201);
-	return defined $rv ? $rv->json : undef; 
+	return $self->_get_response($request,201);
 }
 
 sub del_db {
@@ -48,9 +44,7 @@ sub del_db {
 	my $name = shift // $self->name;
 	my $uri = $self->uri.$name.'/';
 	my $request = CouchDB::Interface::Request->new(uri => $uri, debug => $self->debug, method => 'delete');
-	my $response = $request->execute;
-	my $rv = $self->is_response($response,200);
-	return defined $rv ? $rv->json : undef; 
+	return $self->_get_response($request,200);
 }
 
 sub db_uri {
@@ -68,11 +62,8 @@ sub doc_uri {
 sub _fetch {
 	my ($self,$ids,$path) = @_; 
 	confess "An arrray reference is expected" unless ref $ids eq 'ARRAY';
-	
 	my $request = CouchDB::Interface::Request->new(uri => $self->db_uri.$path, content => {'keys' => $ids}, debug => $self->debug, method => 'post');
-	my $response = $request->execute;
-	my $rv = $self->is_response($response,200);
-	return defined $rv ? $rv->json : undef;
+	return $self->_get_response($request,200);
 }
 
 sub get_multiple {
@@ -95,9 +86,7 @@ sub insert {
 	confess "An arrray reference is expected" unless ref $docs eq 'ARRAY';
 	$self->_get_rev($docs);
 	my $request = CouchDB::Interface::Request->new(uri => $self->db_uri.'_bulk_docs', content => {'docs' => $docs}, debug => $self->debug, method => 'post');
-	my $response = $request->execute;
-	my $rv = $self->is_response($response,201);
-	return defined $rv ? $rv->json : undef;
+	return $self->_get_response($request,201);
 }
 
 sub par_to_string {
@@ -129,12 +118,17 @@ sub exists_doc {
 sub get_doc {
 	my ($self,$params) = @_;
 	my $request = CouchDB::Interface::Request->new(uri => $self->doc_uri($params), debug => $self->debug, method => 'get');
+	return $self->_get_response($request,200); 
+}
+
+sub _get_response {
+	my ($self,$request,$expected) = @_;
 	my $response = $request->execute;
-	my $rv = $self->is_response($response,200);
+	my $rv = $self->_is_response($response,$expected);
 	return defined $rv ? $rv->json : undef; 
 }
 
-sub is_response {
+sub _is_response {
 	my ($self,$response,$expected) = @_;
 	if ($response) {
 		return $response if defined $response->code && $response->code == $expected;
@@ -157,19 +151,14 @@ sub _put_doc {
 	
 	my $doc = $self->get_doc($params);
 	$params->{content}->{_rev} = $doc->{_rev} if $doc;	#if doc already exists, then fill in revision number unless it was provided
-	
 	my $request = CouchDB::Interface::Request->new(uri => $self->doc_uri($params), debug => $self->debug, method => 'put', content => $params->{content});
-	my $response = $request->execute;
-	my $rv = $self->is_response($response,201);
-	return defined $rv ? $rv->json : undef; 
+	return $self->_get_response($request,201);
 }
 
 sub _post_doc {
 	my ($self,$params) = @_;
 	my $request = CouchDB::Interface::Request->new(uri => $self->db_uri, debug => $self->debug, method => 'post', content => $params->{content});
-	my $response = $request->execute;
-	my $rv = $self->is_response($response,201);
-	return defined $rv ? $rv->json : undef; 
+	return $self->_get_response($request,201);
 }
 
 sub delete_doc {
@@ -178,9 +167,7 @@ sub delete_doc {
 	if ($doc) {
 		$params->{rev} = $doc->{_rev};
 		my $request = CouchDB::Interface::Request->new(uri => $self->doc_uri($params), debug => $self->debug, method => 'delete');
-		my $response = $request->execute;
-		my $rv = $self->is_response($response,200);
-		return defined $rv ? $rv->json : undef;
+		return $self->_get_response($request,200);
 	}
 	return undef;
 }
