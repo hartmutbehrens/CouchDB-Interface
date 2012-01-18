@@ -1,7 +1,7 @@
 package CouchDB::Interface::Connector;
 
 =head1 NAME
-CouchDB::Connector;
+CouchDB::Interface::Connector;
 =cut
 
 #pragmas
@@ -9,7 +9,6 @@ use feature qw(say);
 use strict;
 use warnings;
 
-#modules
 #modules
 use Carp qw(confess);
 use CouchDB::Interface::Request;
