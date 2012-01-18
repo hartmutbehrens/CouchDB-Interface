@@ -1,7 +1,7 @@
 package CouchDB::Interface;
 
 =head1 NAME
-CouchDB::Database;
+CouchDB::Interface;
 =cut
 
 #pragmas
