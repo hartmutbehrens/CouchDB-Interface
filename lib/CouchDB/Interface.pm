@@ -13,7 +13,6 @@ use feature qw(say);
 use Carp qw(confess);
 use CouchDB::Interface::Request;
 use Moo;
-use Try::Tiny;
 
 extends 'CouchDB::Interface::Connector';
 
