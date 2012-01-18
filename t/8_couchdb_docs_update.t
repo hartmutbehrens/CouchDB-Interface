@@ -12,8 +12,14 @@ use lib "$FindBin::Bin/../lib";
 use CouchDB::Interface;
 use Mojo::JSON;
 
-my $uri = 'http://hartmut:vodacom@hartmut.iriscouch.com/';
-my $couch = new_ok('CouchDB::Interface' => [uri => $uri, name => 'docs_testing', debug => 1]);
+unless ($ARGV[0]) {
+    plan skip_all => "All tests skipped: URI for CouchDB server not provided";
+}
+
+my $uri = $ARGV[0];
+my $debug = $ARGV[1] || 0;
+my $couch = new_ok('CouchDB::Interface' => [uri => $uri, name => 'testing_db', debug => $debug]);
+$couch->create_db;	#create db, if it does not exist
 
 subtest 'Multiple Document INSERT/UPDATE' => sub {
 	my $data = [{ '_id' => 'first_doc', 'name' => 'julius', 'surname' => 'ceasar'},
@@ -26,7 +32,7 @@ subtest 'Multiple Document INSERT/UPDATE' => sub {
 	is(defined $response->[1]->{rev}, 1, 'Second entry insert/update OK');
 	is(defined $response->[2]->{rev}, 1, 'Second entry insert/update OK');
 	
-	$data = [{ '_id' => 'first_doc', 'name' => 'julius', 'surname' => 'malema'},
+	$data = [{ '_id' => 'first_doc', 'name' => 'julius', 'surname' => 'foobar'},
 				{ '_id' => 'second_doc', 'name' => 'king', 'surname' => 'tut'},
 				{ '_id' => 'third_doc', '_deleted' => Mojo::JSON->true }];
 				

@@ -11,11 +11,17 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 use CouchDB::Interface;
 
-my $uri = 'http://hartmut:vodacom@hartmut.iriscouch.com/';
-my $couch = new_ok('CouchDB::Interface' => [uri => $uri, name => 'docs_testing', debug => 1]);
+unless ($ARGV[0]) {
+    plan skip_all => "All tests skipped: URI for CouchDB server not provided";
+}
+
+my $uri = $ARGV[0];
+my $debug = $ARGV[1] // 0;
+my $couch = new_ok('CouchDB::Interface' => [uri => $uri, name => 'testing_db', debug => $debug]);
+$couch->create_db;	#create db, if it does not exist
 
 subtest 'Document POST' => sub {
-	my $content = {'name' => 'laurenhartmut','surname' => 'snymanbehrens'};
+	my $content = {'name' => 'foobar','surname' => 'barfoo'};
 	
 	my $data = $couch->save_doc({content => $content});		#no id specified generates a POST request
 	is(defined $data->{ok} && $data->{ok} == 1, 1, 'Document POST OK');
