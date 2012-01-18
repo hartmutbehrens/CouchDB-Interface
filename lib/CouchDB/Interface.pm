@@ -71,8 +71,8 @@ sub _fetch {
 	
 	my $request = CouchDB::Interface::Request->new(uri => $self->db_uri.$path, content => {'keys' => $ids}, debug => $self->debug, method => 'post');
 	my $response = $request->execute;
-	return $response->json if $response->code == 200;
-	$request->complain($response);
+	my $rv = $self->is_response($response,200);
+	return defined $rv ? $rv->json : undef;
 }
 
 sub get_multiple {
@@ -96,8 +96,8 @@ sub insert {
 	$self->_get_rev($docs);
 	my $request = CouchDB::Interface::Request->new(uri => $self->db_uri.'_bulk_docs', content => {'docs' => $docs}, debug => $self->debug, method => 'post');
 	my $response = $request->execute;
-	return $response->json if $response->code == 201;
-	$request->complain($response);
+	my $rv = $self->is_response($response,201);
+	return defined $rv ? $rv->json : undef;
 }
 
 sub par_to_string {
