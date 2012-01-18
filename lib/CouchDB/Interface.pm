@@ -17,7 +17,7 @@ use Try::Tiny;
 
 extends 'CouchDB::Interface::Connector';
 
-has 'name' => (is => 'rw', required => 1);
+has name => (is => 'rw', required => 1);
 has debug => (is => 'rw', default => sub { return 0} );
 
 sub all_dbs {
