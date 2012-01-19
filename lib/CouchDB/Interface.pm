@@ -83,7 +83,7 @@ sub update {
 
 sub insert {
 	my ($self,$docs) = @_;
-	confess "An arrray reference is expected" unless ref $docs eq 'ARRAY';
+	confess 'An arrray reference is expected' unless ref $docs eq 'ARRAY';
 	$self->_get_rev($docs);
 	my $request = CouchDB::Interface::Request->new(uri => $self->db_uri.'_bulk_docs', content => {'docs' => $docs}, debug => $self->debug, method => 'post');
 	return $self->_get_response($request,201);
@@ -91,7 +91,7 @@ sub insert {
 
 sub par_to_string {
 	my ($self,$params) = @_;
-	my $string = defined $params ? '&'.join( '&' ,map($_.'="'.$params->{$_}."'" ,keys %$params)) : '';
+	my $string = defined $params ? '&'.join( '&' ,map($_.'="'.$params->{$_}.'"' ,keys %$params)) : '';
 	return $string;
 }
 
