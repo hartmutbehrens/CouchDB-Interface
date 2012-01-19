@@ -32,7 +32,7 @@ sub all_dbs {
 sub has_db {
 	my $self = shift;
 	my $name = shift // $self->name;
-	return (grep { $_ eq $name } @{$self->all_dbs()}) ? 1 : 0;
+	return ( grep { $_ eq $name } $self->all_dbs() ) ? 1 : 0;
 }
 
 sub create_db {
