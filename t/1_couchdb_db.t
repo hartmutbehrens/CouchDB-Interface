@@ -12,17 +12,12 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 use CouchDB::Interface;
 
-unless ($ARGV[0]) {
-    plan skip_all => "All tests skipped: URI for CouchDB server not provided";
+unless ($ENV{COUCHDB_URI}) {
+    plan skip_all => "All tests skipped: Environmental variable COUCHDB_URI specifying a CouchDB server address is not set";
 }
-
-my $uri = $ARGV[0];
-my $debug = $ARGV[1] // 0;
+my $uri = $ENV{COUCHDB_URI};
+my $debug = $ARGV[0] // 0;
 my $couch = new_ok('CouchDB::Interface' => [uri => $uri, name => 'testing_db', debug => $debug]);
-
-subtest 'Connection to invalid URI' => sub {
-	dies_ok { CouchDB::Interface->new(uri => 'http://rub.i.sh/', name => 'bogus') }, "Connection to invalid URI handled OK" ;	
-};
 
 subtest 'Database deletion' => sub {
 	SKIP: {
