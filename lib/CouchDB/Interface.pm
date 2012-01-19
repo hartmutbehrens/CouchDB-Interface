@@ -1,8 +1,5 @@
 package CouchDB::Interface;
-
-=head1 NAME
-CouchDB::Interface;
-=cut
+# ABSTRACT: CouchDB::Interface - use CouchDB's RESTful API
 
 #pragmas
 use strict;

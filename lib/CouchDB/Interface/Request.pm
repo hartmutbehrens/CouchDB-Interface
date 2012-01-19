@@ -1,8 +1,5 @@
 package CouchDB::Interface::Request;
-
-=head1 NAME
-CouchDB::Interface::Request;
-=cut
+# ABSTRACT: CouchDB::Interface::Request - wrap CouchDB::Interface method calls in an HTTP request and provide the HTTP response
 
 #pragmas
 use strict;
@@ -45,11 +42,11 @@ sub execute {
 
 sub _describe {
 	my ($self,$response) = @_;
-	say "\tRequest:  ", uc($self->method)," ",$self->uri;
+	say "\tRequest:  ", uc($self->method),' ',$self->uri;
 	say "\tSent Content:  ", $self->json->encode($self->content);
-	say "\tResponse code was: \"",$response->code,"\ (",$response->message,")" if defined $response->code;
+	say "\tResponse code was: \"",$response->code,'\ (',$response->message,')' if defined $response->code;
 	say "\tError was: \"",$response->error,"\"." if defined $response->error;
-	say "";
+	say '';
 }
 
 1;
