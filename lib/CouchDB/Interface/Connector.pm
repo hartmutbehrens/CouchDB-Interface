@@ -23,9 +23,9 @@ sub connected {
 	my $response = $request->execute;
 	return 1 if (defined $response->code) && ($response->code == 200);
 	
-	my $code_txt = defined $response->code ? " Response code: ".$response->code : ''; 
-	my $err_txt = defined $response->error ? " Error: ".$response->error : '';
-	confess "Could not connect to ", $_[0], join('.',$code_txt,$err_txt),"\n";
+	my $code_txt = defined $response->code ? ' Response code: '.$response->code : ''; 
+	my $err_txt = defined $response->error ? ' Error: '.$response->error : '';
+	confess 'Could not connect to ', $_[0], join('.',$code_txt,$err_txt),"\n";
 }
 
 1;
