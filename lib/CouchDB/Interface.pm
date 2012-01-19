@@ -14,10 +14,7 @@ use Moo;
 extends 'CouchDB::Interface::Connector';
 
 has name => (is => 'rw', required => 1);
-
-
 has debug => (is => 'rw', default => sub { return 0} );
-
 
 sub all_dbs {
 	my $self = shift;
@@ -203,11 +200,11 @@ sub delete_doc {
 	#check whether a document exists
 	$couch->exists_doc( { id => $doc_id } );
 	
-	#save a document, assign id yourself
+	#save a document to the database, assign id yourself
 	my $content = { 'foo' => 'bar', 'bar' => 'foo' };
 	my $status = $couch->save_doc( { id => $doc_id, content => $content } );
 	
-	#save a document, let CouchDB assign a unique id
+	#save a document to the database, let CouchDB assign a unique id
 	my $content = { 'foo' => 'bar', 'bar' => 'foo' };
 	my $status = $couch->save_doc( { content => $content } );
 	
