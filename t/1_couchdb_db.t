@@ -6,7 +6,6 @@ use warnings;
 use feature qw(say);
 
 #modules
-use Data::Dumper;
 use Test::More;
 use Test::Exception;
 use FindBin;
@@ -32,8 +31,7 @@ my @db = $couch->all_dbs;
 ok( grep(/testing/, @db ), "all_dbs works ( @db )"  );
 subtest 'Database creation' => sub {
 	my $data = $couch->create_db;
-	is(defined $data->{ok} && $data->{ok} == 1, 1, 'Database creation OK');
-	say Dumper($data);	
+	is(defined $data->{ok} && $data->{ok} == 1, 1, 'Database creation OK');	
 };
 
 subtest 'Database deletion' => sub {
