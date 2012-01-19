@@ -6,6 +6,7 @@ use warnings;
 use feature qw(say);
 
 #modules
+use Data::Dumper;
 use Test::More;
 use Test::Exception;
 use FindBin;
@@ -22,7 +23,7 @@ my $couch = new_ok('CouchDB::Interface' => [uri => $uri, name => 'testing_db', d
 subtest 'Database deletion' => sub {
 	SKIP: {
 		skip 'database not available for deletion', 1 unless $couch->has_db;
-		my $data = $couch->del_db;
+		my $data = $couch->delete_db;
 		is(defined $data->{ok} && $data->{ok} == 1, 1, 'Database deletion OK');
 	}
 };	 
@@ -32,13 +33,13 @@ ok( grep(/testing/, @db ), "all_dbs works ( @db )"  );
 subtest 'Database creation' => sub {
 	my $data = $couch->create_db;
 	is(defined $data->{ok} && $data->{ok} == 1, 1, 'Database creation OK');
-		
+	say Dumper($data);	
 };
 
 subtest 'Database deletion' => sub {
 	SKIP: {
 		skip 'database not available for deletion', 1 unless $couch->has_db;
-		my $data = $couch->del_db;
+		my $data = $couch->delete_db;
 		is(defined $data->{ok} && $data->{ok} == 1, 1, 'Database deletion OK');
 	}
 };

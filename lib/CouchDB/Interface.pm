@@ -40,7 +40,7 @@ sub create_db {
 	return $self->_get_response($request,201);
 }
 
-sub del_db {
+sub delete_db {
 	my $self = shift;
 	my $name = shift // $self->name;
 	my $uri = $self->uri.$name.'/';
@@ -180,39 +180,39 @@ sub delete_doc {
 =head1 SYNOPSIS
 	
 	use CouchDB::Interface;
-	my $couch = CouchDB::Interface->new({uri => 'http://localhost:5984', name => $db});
+	my $couch = CouchDB::Interface->new({uri => 'http://localhost:5984', name => 'db_name'});
 	
 	#if authentication credentials are required
-	my $couch = CouchDB::Interface->new({uri => 'http://user:password@localhost:5984', name => $db});
+	my $couch = CouchDB::Interface->new({uri => 'http://user:password@localhost:5984', name => 'db_name'});
 	
 	#get a list of all databases on the CouchDB server
 	my @databases = $couch->all_dbs;
 	
 	#check whether a database exists on the CouchDB server
-	my $exists_other = $couch->has_db($other_db);
+	my $exists_other = $couch->has_db('name');
 	
 	#create a database
-	my $status = $couch->create_db($other_db);
+	my $status = $couch->create_db('name');
 	
 	#delete a database
-	my $status = $couch->del_db($other_db); 
+	my $status = $couch->del_db('name'); 
 	
 	#check whether a document exists
-	$couch->exists_doc( { id => $doc_id } );
+	$couch->exists_doc( { id => 'some_doc_id' } );
 	
 	#save a document to the database, assign id yourself
 	my $content = { 'foo' => 'bar', 'bar' => 'foo' };
-	my $status = $couch->save_doc( { id => $doc_id, content => $content } );
+	my $status = $couch->save_doc( { id => 'some_doc_id', content => $content } );
 	
 	#save a document to the database, let CouchDB assign a unique id
 	my $content = { 'foo' => 'bar', 'bar' => 'foo' };
 	my $status = $couch->save_doc( { content => $content } );
 	
 	#retrieve a document
-	my $doc = $couch->get_doc( { id => $doc_id } );
+	my $doc = $couch->get_doc( { id => 'some_doc_id' } );
 	
 	#delete a document
-	my $status = $couch->delete_doc( { id => $doc_id } );
+	my $status = $couch->delete_doc( { id => 'some_doc_id' } );
 	
 	
 
@@ -226,22 +226,66 @@ Enable verbose debugging
 
 Create a new CouchDB::Interface object.
 
-	my $couch = CouchDB::Interface->new({uri => 'http://localhost:5984', name => $db});
+	my $couch = CouchDB::Interface->new({uri => 'http://localhost:5984', name => 'db_name'});
 
 =method all_dbs
 List Get a list of databases on the CouchDB server.
 
-=method has_db
-Check whether a database exists on the CouchDB server. Returns 1 if the database is present and 0 otherwise.
+=method has_db('db_name')
+Check whether the database exists on the CouchDB server. Returns 1 if the database is present and 0 otherwise.
 
 	#check whether a database exists on the CouchDB server
-	my $exists = $couch->has_db($db_name);
+	my $exists = $couch->has_db('db_name');
 	
-If no database name is provided, then the presence of the database specified in the 'name' attribute is checked.
+If a database name is not provided, then the presence of the database specified in the 'name' attribute is checked.
 
-	my $couch = CouchDB::Interface->new({uri => 'http://localhost:5984', name => $db});
-	#check whether $db exists on the CouchDB server
-	my $exists = $couch->has_db;  
+	my $couch = CouchDB::Interface->new({uri => 'http://localhost:5984', name => 'another_db'});
+	my $exists = $couch->has_db; #check if 'another_db' exists on the CouchDB server
+	
+=method create_db('db_name')
+Create a database on the CouchDB server.
+
+	my $status = $couch->create_db('db_name'); # $status->{ok} == 1 if successful
+	
+If the request was succesful, then the hashref C<$status> will contain the decoded JSON response of the CouchDB server. 
+For unsuccesful requests undef will be returned.
+
+=method delete_db('db_name')
+Delete a database on the CouchDB Server. 
+
+	my $status = $couch->delete_db('db_name'); # $status->{ok} == 1 if successful
+	
+The return value is the same as for method C<create_db>
+
+=method exists_doc('doc_id')
+Check whether the named document exists on the CouchDB server. Returns 1 if the document is present and 0 otherwise.
+
+	#check whether a database exists on the CouchDB server
+	my $exists = $couch->exists_doc('doc_id');
+	
+=method get_doc('doc_id')
+Retrieve the named document from CouchDB server.
+
+	my $doc= $couch->get_doc('doc_id');
+	
+If the document exists, then the hashref C<$doc> will contain the decoded JSON response of the CouchDB server.
+C<undef> will be returned if the document does not exist.
+
+=method save_doc( { id => 'doc_id', content => $content } )
+Save a document to the CouchDB server.
+
+	my $content = { 'foo' => 'bar', 'bar' => 'foo' };
+	my $status = $couch->save_doc( { id => 'some_doc_id', content => $content } ); # $status = {"ok" => 1} if successful
+
+If the request was succesful, then the hashref C<$status> will contain the decoded JSON response of the CouchDB server. 
+For unsuccesful requests undef will be returned.
+
+The C<id> attribute may be omitted, in which case the CouchDB server will assign a unique UUID to the stored document.
+The unique id will be available in the C<$status> hashref.
+
+	my $status = $couch->save_doc( { content => $content } ); # $status->{ok} == 1 if successful
+	say "The CouchDB assigned id of the document is: ", $status->{id};
+
 
 =cut
 __END__
