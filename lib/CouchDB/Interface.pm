@@ -14,12 +14,19 @@ use Moo;
 extends 'CouchDB::Interface::Connector';
 
 has name => (is => 'rw', required => 1);
+
+
 has debug => (is => 'rw', default => sub { return 0} );
+
 
 sub all_dbs {
 	my $self = shift;
 	my $request = CouchDB::Interface::Request->new(uri => $self->uri.'_all_dbs', debug => $self->debug, method => 'get');
-	return $self->_get_response($request,200);
+	my $dbs = $self->_get_response($request,200);
+	if ($dbs) {
+		return wantarray ? @{$dbs} : $dbs;
+	}
+	return undef;
 }
 
 sub has_db {
@@ -170,3 +177,70 @@ sub delete_doc {
 }
 
 1;
+
+=pod
+
+=head1 SYNOPSIS
+	
+	use CouchDB::Interface;
+	my $couch = CouchDB::Interface->new({uri => 'http://localhost:5984', name => $db});
+	
+	#if authentication credentials are required
+	my $couch = CouchDB::Interface->new({uri => 'http://user:password@localhost:5984', name => $db});
+	
+	#get a list of all databases on the CouchDB server
+	my @databases = $couch->all_dbs;
+	
+	#check whether a database exists on the CouchDB server
+	my $exists_other = $couch->has_db($other_db);
+	
+	#create a database
+	my $status = $couch->create_db($other_db);
+	
+	#delete a database
+	my $status = $couch->del_db($other_db); 
+	
+	#check whether a document exists
+	$couch->exists_doc( { id => $doc_id } );
+	
+	#save a document, assign id yourself
+	my $content = { 'foo' => 'bar', 'bar' => 'foo' };
+	my $status = $couch->save_doc( { id => $doc_id, content => $content } );
+	
+	#save a document, let CouchDB assign a unique id
+	my $content = { 'foo' => 'bar', 'bar' => 'foo' };
+	my $status = $couch->save_doc( { content => $content } );
+	
+	#retrieve a document
+	my $doc = $couch->get_doc( { id => $doc_id } );
+	
+	#delete a document
+	my $status = $couch->delete_doc( { id => $doc_id } );
+	
+	
+
+=attr name 
+The name of the database on the CouchDB server.
+
+=attr debug 
+Enable verbose debugging
+
+=method new
+
+Create a new CouchDB::Interface object.
+
+	my $couch = CouchDB::Interface->new({uri => 'http://localhost:5984', name => $db});
+
+=method all_dbs
+List Get a list of databases on the CouchDB server.
+
+=method has_db
+Check whether a database exists on the CouchDB server.
+
+	#check whether a database exists on the CouchDB server
+	my $exists_other = $couch->has_db($db_name);
+	
+If no database name is provided,  
+
+=cut
+__END__

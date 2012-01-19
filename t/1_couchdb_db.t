@@ -32,8 +32,8 @@ subtest 'Database deletion' => sub {
 	}
 };	 
 
-my $db = $couch->all_dbs;
-ok( grep(/testing/, @{$db} ), "all_dbs works ( @{$db} )"  );
+my @db = $couch->all_dbs;
+ok( grep(/testing/, @db ), "all_dbs works ( @db )"  );
 subtest 'Database creation' => sub {
 	my $data = $couch->create_db;
 	is(defined $data->{ok} && $data->{ok} == 1, 1, 'Database creation OK');
