@@ -235,12 +235,16 @@ Create a new CouchDB::Interface object.
 List Get a list of databases on the CouchDB server.
 
 =method has_db
-Check whether a database exists on the CouchDB server.
+Check whether a database exists on the CouchDB server. Returns 1 if the database is present and 0 otherwise.
 
 	#check whether a database exists on the CouchDB server
-	my $exists_other = $couch->has_db($db_name);
+	my $exists = $couch->has_db($db_name);
 	
-If no database name is provided,  
+If no database name is provided, then the presence of the database specified in the 'name' attribute is checked.
+
+	my $couch = CouchDB::Interface->new({uri => 'http://localhost:5984', name => $db});
+	#check whether $db exists on the CouchDB server
+	my $exists = $couch->has_db;  
 
 =cut
 __END__

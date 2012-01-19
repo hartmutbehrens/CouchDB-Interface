@@ -48,5 +48,8 @@ sub _describe {
 	say "\tError was: \"",$response->error,"\"." if defined $response->error;
 	say '';
 }
-
 1;
+
+=pod
+=cut
+__END__

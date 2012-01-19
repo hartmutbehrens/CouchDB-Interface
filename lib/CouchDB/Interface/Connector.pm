@@ -1,5 +1,5 @@
 package CouchDB::Interface::Connector;
-# ABSTRACT: CouchDB::Interface::Connector - make sure you have a connection to the CouchDB
+# ABSTRACT: CouchDB::Interface::Connector - internal package that makes sure you have a connection to the CouchDB
 
 #pragmas
 use feature qw(say);
@@ -11,11 +11,11 @@ use Carp qw(confess);
 use CouchDB::Interface::Request;
 use Moo;
 
-has uri => ( is => 'ro', isa => \&connected, required => 1 );
+has uri => ( is => 'ro', isa => \&_connected, required => 1 );
 
 before 'uri' => sub { $_[0]->{uri} .= '/' unless $_[0]->{uri} =~ m{/$}; };
 
-sub connected {
+sub _connected {
 	my $request = CouchDB::Interface::Request->new(uri => $_[0], method => 'get');
 	my $response = $request->execute;
 	return 1 if (defined $response->code) && ($response->code == 200);
@@ -26,3 +26,9 @@ sub connected {
 }
 
 1;
+
+=pod
+=attr uri
+The CouchDB server URI
+=cut
+__END__
