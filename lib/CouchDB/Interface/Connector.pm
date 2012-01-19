@@ -1,8 +1,5 @@
 package CouchDB::Interface::Connector;
-
-=head1 NAME
-CouchDB::Interface::Connector;
-=cut
+# ABSTRACT: CouchDB::Interface::Connector - make sure you have a connection to the CouchDB
 
 #pragmas
 use feature qw(say);
@@ -14,7 +11,7 @@ use Carp qw(confess);
 use CouchDB::Interface::Request;
 use Moo;
 
-has uri => ( is => 'rw', isa => \&connected, required => 1 );
+has uri => ( is => 'ro', isa => \&connected, required => 1 );
 
 before 'uri' => sub { $_[0]->{uri} .= '/' unless $_[0]->{uri} =~ m{/$}; };
 
