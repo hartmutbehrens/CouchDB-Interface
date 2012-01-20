@@ -23,7 +23,7 @@ sub all_dbs {
 	if ($dbs) {
 		return wantarray ? @{$dbs} : $dbs;
 	}
-	return undef;
+	return;
 }
 
 sub has_db {
@@ -79,25 +79,25 @@ sub get_multiple_with_doc {
 
 sub update {
 	my ($self,$docs) = @_;
-	$self->insert($docs);
+	return $self->insert($docs);
 }
 
 sub insert {
 	my ($self,$docs) = @_;
 	confess 'An arrray reference is expected' unless ref $docs eq 'ARRAY';
-	$self->_get_rev($docs);
+	$docs = $self->_add_rev($docs);
 	my $request = CouchDB::Interface::Request->new(uri => $self->db_uri.'_bulk_docs', content => {'docs' => $docs}, debug => $self->debug, method => 'post');
 	return $self->_get_response($request,201);
 }
 
 sub par_to_string {
 	my ($self,$params) = @_;
-	my $string = defined $params ? '&'.join( '&' ,map($_.'="'.$params->{$_}.'"' ,keys %$params)) : '';
+	my $string = defined $params ? '&'.join( '&' ,map { $_.'="'.$params->{$_}.'"' } keys %$params ) : '';
 	return $string;
 }
 
 #get revision, if one is available
-sub _get_rev {
+sub _add_rev {
 	my ($self,$docs) = @_;
 	my %index;
 	for my $i (0..$#$docs) {
@@ -108,6 +108,7 @@ sub _get_rev {
 		next unless defined $id->{value};
 		$docs->[$index{$id->{id}}]->{_rev} = $id->{value}->{rev};	
 	}
+	return $docs;
 }
 
 sub exists_doc {
@@ -134,7 +135,7 @@ sub _is_response {
 	if ($response) {
 		return $response if defined $response->code && $response->code == $expected;
 	}
-	return undef;
+	return;
 }
 
 sub save_doc {
@@ -170,7 +171,7 @@ sub delete_doc {
 		my $request = CouchDB::Interface::Request->new(uri => $self->doc_uri($params), debug => $self->debug, method => 'delete');
 		return $self->_get_response($request,200);
 	}
-	return undef;
+	return;
 }
 
 1;
